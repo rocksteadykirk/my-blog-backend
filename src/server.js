@@ -4,27 +4,20 @@ const app = express();
 
 app.use(express.json());
 
-// app.get('/hello/:name', (req, res) => {
-//     const { name } = req.params;
-//     res.send(`Hello ${name}!!`);
-// })
-
-// app.post('/hello', (req, res) => {
-//     console.log(req.body);
-//     res.send(`Hello ${req.body.name}`);
-// })
-
 let articlesInfo = [{
     name : 'learn-react',
     upvotes : 0,
+    comments: [],
 },
 {
     name : 'learn-node',
     upvotes : 0,
+    comments: [],
 },
 {
     name : 'learn-mongodb',
     upvotes : 0,
+    comments: [],
 }]
 
 
@@ -45,3 +38,18 @@ app.listen(8000, () => {
     console.log('Server is listening on port 8000')
 })
 
+// adding comments to articles: creating a new comment
+app.post('/api/articles/:name/comments', (req, res) => {
+    const { name } = req.params;
+    const { postedBy, text} = req.body;
+
+    const article = articlesInfo.find(a => a.name === name);
+
+    if (article) {
+        article.comments.push({ postedBy, text });
+        res.send(article.comments);
+    } else {
+        res.send('That article doesn\'t exist');
+    }
+
+})
