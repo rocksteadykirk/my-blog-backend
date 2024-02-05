@@ -26,7 +26,7 @@ app.put('/api/articles/:name/upvote', async (req, res) => {
 
  
     await db.collection('articles').updateOne({ name }, {
-        $inc: { upvotes: 1 },                              // second argument in update contain the changes we want to make to the article. $inc: {upvotes :1} telling mongodb to increment upvotes by one.
+        $inc: { upvotes: 1 },                              
     });
     
     const article = await db.collection('articles').findOne({ name });
