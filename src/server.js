@@ -1,8 +1,22 @@
+import fs from 'fs';                  // to load credentials.json file
+import admin from 'firebase-admin';
 import express from 'express';
 import { db, connectToDb } from './db.js';
 
-const app = express();
+// set up firebase admin package on server
 
+// to load credentials.json file
+const credentials = JSON.parse(                     
+    fs.readFileSync('../credentials.json')
+);
+
+// use credentials to initialize firebase admin package on server and connect it to our firebase project
+// Here we simply telling the firebase admin package what credentials to use to connect to our project
+admin.initializeApp({
+    credentials: admin.credential.cert(credentials),
+});
+
+const app = express();
 app.use(express.json());
 
 // end point for loading article info from MongoDB
