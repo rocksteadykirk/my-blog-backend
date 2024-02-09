@@ -1,7 +1,16 @@
 import fs from 'fs';                  // to load credentials.json file
+import path from "path";
 import admin from 'firebase-admin';
 import express from 'express';
+import 'dotenv/config';
 import { db, connectToDb } from './db.js';
+
+
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 
 // set up firebase admin package on server
 
@@ -18,6 +27,13 @@ admin.initializeApp({
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../build'))); // To tell express to use build folder as a static folder
+
+
+/* This is a route handler. It is a function that is called when a request is made to the server. */
+app.get(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+})
 
 /* middleware function that is called before any other route handler.
 It checks if the request has an auth_token in the header.
@@ -111,12 +127,17 @@ app.post('/api/articles/:name/comments', async (req, res) => {
 })
 
 
+/* Setting the port to the value of the PORT environment variable,
+or 8000 if the PORT environment variable is not set. */
+const PORT = process.env.PORT || 8000;
+
+
 // ensure server won't even start up until we have sccessfully connected to the database by wrapping app.listen in connectToDb()
 
 connectToDb( () => {
     console.log('successfully connected to the database')
-    app.listen(8000, () => {
-        console.log('Server is listening on port 8000')
+    app.listen(PORT, () => {
+        console.log('Server is listening on port ' + PORT);
     });
 
 })
